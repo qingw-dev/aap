@@ -4,8 +4,8 @@ import traceback
 from typing import Any
 
 import requests
-from aworld.tools import FunctionTools
 from dotenv import load_dotenv
+from fastmcp import FastMCP
 from google import genai
 from google.genai import types
 from pydantic import Field
@@ -14,19 +14,12 @@ from aap.tools.image.views import ImageResult
 
 from .views import ImageResult
 
-load_dotenv()
+load_dotenv(override=True)
 
-# Define the image tools with description
-image_tools: FunctionTools = FunctionTools(
-    "image",
-    description=(
-        "Multi-modal image analysis capabilities for "
-        "captioning, classification, and visual QA"
-    ),
-)
+mcp = FastMCP("search")
 
 
-@image_tools.tool(
+@mcp.tool(
     description="""Process images with multi-modal reasoning capabilities.
 
     Supports image captioning, classification, and visual question answering
@@ -98,3 +91,7 @@ async def process_image(
         result.execution_successful = False
         result.errors = [str(e), traceback.format_exc()]
     return result
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio", show_banner=False)

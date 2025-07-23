@@ -5,9 +5,9 @@ from pathlib import Path
 
 import filetype
 import requests
-from aworld.tools import FunctionTools
 from datalab_sdk.models import ConversionResult, ConvertOptions, OCROptions
 from dotenv import load_dotenv
+from fastmcp.server.server import FastMCP
 from pydantic import Field
 from pydantic.fields import FieldInfo
 from requests.models import Response
@@ -16,16 +16,12 @@ from aap.tools.document.views import DocumentEntity, DocumentResult
 
 from .views import DocumentEntity, DocumentResult
 
-DATALAB_URL = "https://www.datalab.to/api/v1"
+load_dotenv(override=True)
 
-load_dotenv()
+mcp = FastMCP("document")
+DATALAB_URL = "https://www.datalab.to/api/v1"
 workspace: Path = Path(os.getenv("AWORLD_WORKSPACE", "~/")) / "processed_documents"
 workspace.mkdir(parents=True, exist_ok=True)
-
-document_tools: FunctionTools = FunctionTools(
-    name="document",
-    description="Document processing tools using Datalab SDK",
-)
 
 
 def _prepare_file_entity(file_path: [str | Path]) -> DocumentEntity:
@@ -123,7 +119,7 @@ async def _poll_result(
         ) from e
 
 
-@document_tools.tool(
+@mcp.tool(
     description=(
         "Convert document to markdown foramt. "
         "Support PDFs, DOCX, XLSX, PPTX, HTML, and images."
@@ -169,11 +165,4 @@ async def convert_document_to_markdown(
 
 
 if __name__ == "__main__":
-
-    async def main() -> None:
-        result = await convert_document_to_markdown(
-            file_path="/Users/arac/Desktop/QW_CV.pdf"
-        )
-        print(result)
-
-    asyncio.run(main())
+    mcp.run(transport="stdio", show_banner=False)

@@ -3,31 +3,24 @@ import os
 import traceback
 from pathlib import Path
 
-from aworld.tools import FunctionTools
 from browser_use import Agent, BrowserSession
 from browser_use.agent.views import AgentHistoryList
 from browser_use.browser.profile import BrowserProfile
 from browser_use.llm import ChatOpenAI
 from dotenv import load_dotenv
+from fastmcp.server.server import FastMCP
 from pydantic import Field
 from pydantic.fields import FieldInfo
 
 from .prompts import extended_browser_system_prompt
 from .views import BrowserResult
 
-load_dotenv()
+load_dotenv(override=True)
 
-# Define the browser tools with a description
-browser_tools: FunctionTools = FunctionTools(
-    "browser-use",
-    description=(
-        "Web browsing and automation tools powered by browser-use. "
-        "Supports navigation, extraction, and downloading files/images."
-    ),
-)
+mcp = FastMCP("browser")
 
 
-@browser_tools.tool(
+@mcp.tool(
     description="""Use browser to visit a web page, extract content,
     and optionally download files/images, ...
 
@@ -138,3 +131,7 @@ async def complete_browser_task(
     except Exception:
         result.errors = history.errors() + [traceback.format_exc()]
     return result
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio", show_banner=False)

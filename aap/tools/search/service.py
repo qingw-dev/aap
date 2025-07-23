@@ -3,8 +3,8 @@ import traceback
 from typing import Any
 
 import httpx
-from aworld.tools import FunctionTools
 from dotenv import load_dotenv
+from fastmcp import FastMCP
 from httpx._models import Response
 from pydantic import Field
 from pydantic.fields import FieldInfo
@@ -13,21 +13,16 @@ from aap.tools.search.views import GoogleSearchResult
 
 from .views import Document, GoogleSearchResult
 
-load_dotenv()
+load_dotenv(override=True)
 
-search_tools: FunctionTools = FunctionTools(
-    name="search",
-    description=(
-        "Google Search API tools for fetching relevant documents given a user query."
-    ),
-)
+mcp = FastMCP("search")
 
 
-@search_tools.tool(
+@mcp.tool(
     description=(
         "Search the web using Google Custom Search API "
         "and return a list of documents with url and summary."
-    )
+    ),
 )
 async def google_search(
     query: str = Field(..., description="The user query to search for"),
@@ -69,3 +64,7 @@ async def google_search(
         result.errors = [traceback.format_exc()]
         result.execution_successful = False
     return result
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio", show_banner=False)

@@ -6,27 +6,25 @@ from typing import Literal
 from aworld.config.conf import AgentConfig
 from aworld.models.llm import acall_llm_model, get_llm_model
 from aworld.models.model_response import ModelResponse
-from aworld.tools import FunctionTools
+from dotenv import load_dotenv
+from fastmcp import FastMCP
 from pydantic import Field
 
 from aap.tools.think.views import ThinkResult
 
 from .views import ThinkResult
 
+load_dotenv(override=True)
+
+mcp = FastMCP("think")
+
+
 # Initialize workspace and tools
 workspace = os.getenv("AWORLD_WORKSPACE", "~/think_workspace")
 os.makedirs(workspace, exist_ok=True)
 
-# Define the think tools with description
-think_tools: FunctionTools = FunctionTools(
-    name="think",
-    description=(
-        "Advanced reasoning capabilities for mathematical, coding, and logical problems"
-    ),
-)
 
-
-@think_tools.tool(
+@mcp.tool(
     description="""Process complex reasoning tasks with structured output.
 
     Handles mathematical proofs, programming challenges, and logical problems
@@ -124,3 +122,7 @@ def _prepare_reasoning_prompt(
             "content": prompt + style_instructions.get(reasoning_style, ""),
         }
     ]
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio", show_banner=False)

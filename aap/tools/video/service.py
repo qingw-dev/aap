@@ -2,8 +2,8 @@ import os
 import traceback
 from typing import Literal
 
-from aworld.tools import FunctionTools
 from dotenv import load_dotenv
+from fastmcp.server.server import FastMCP
 from google import genai
 from google.genai import types
 from google.genai.client import Client
@@ -14,18 +14,12 @@ from aap.tools.video.views import VideoResult
 
 from .views import VideoResult
 
-load_dotenv()
+load_dotenv(override=True)
 
-video_tools: FunctionTools = FunctionTools(
-    name="video",
-    description=(
-        "Video understanding and processing tools using Gemini API. "
-        "Supports summarization, segmentation, timestamp QA, and more."
-    ),
-)
+mcp = FastMCP("video")
 
 
-@video_tools.tool(
+@mcp.tool(
     description=(
         "Summarize a video using Gemini API. "
         "Supports local files (<20MB), YouTube URLs, or uploaded files. "
@@ -87,7 +81,7 @@ async def summarize_video(
     return result
 
 
-@video_tools.tool(
+@mcp.tool(
     description=(
         "Ask a question about a specific timestamp "
         "or segment in a video using Gemini API."
@@ -141,7 +135,7 @@ async def video_qa(
     return result
 
 
-@video_tools.tool(
+@mcp.tool(
     description=(
         "Transcribe the audio from a video and "
         "provide visual descriptions using Gemini API."
@@ -187,3 +181,7 @@ async def transcribe_and_describe_video(
         result.errors = [traceback.format_exc(), str(e)]
         result.execution_successful = False
     return result
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio", show_banner=False)
