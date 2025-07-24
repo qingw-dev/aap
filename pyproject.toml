@@ -6,10 +6,12 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "anthropic>=0.58.2",
-    "aworld>=0.2.5",
+    "aworld==0.2.6",
+    "browser-use==0.5.5",
     "click>=8.2.1",
     "colorama>=0.4.6",
     "fastmcp>=2.10.6",
+    "filetype>=1.2.0",
     "google-generativeai>=0.8.5",
     "httpx>=0.28.1",
     "openai>=1.66.5",
