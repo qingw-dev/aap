@@ -6,7 +6,8 @@ from aworld.core.agent.swarm import TeamSwarm
 from aworld.core.task import TaskResponse
 from aworld.planner.plan import PlannerOutputParser
 from aworld.runner import Runners
-from examples.multi_agents.deepresearch.prompts import plan_sys_prompt
+
+from .prompts import plan_sys_prompt
 
 
 class MultiAgentTeam:
