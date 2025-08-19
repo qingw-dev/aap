@@ -16,7 +16,7 @@ from aworld.agents.llm_agent import Agent
 from aworld.config.conf import AgentConfig
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
-from .mcp_config import MCP_CONFIG
+from ..mcp_config import MCP_CONFIG
 
 
 class LayerType(StrEnum):
